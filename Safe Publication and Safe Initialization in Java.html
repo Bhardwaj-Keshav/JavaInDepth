@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)https://shipilev.net/blog/2014/safe-public-construction/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.5">
+<title>Safe Publication and Safe Initialization in Java</title>
+<style>
+/* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
+/* Remove the comments around the @import statement below when using this as a custom stylesheet */
+@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic|Noto+Serif:400,400italic,700,700italic|Droid+Sans+Mono:400";
+article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary{display:block}
+audio,canvas,video{display:inline-block}
+audio:not([controls]){display:none;height:0}
+[hidden],template{display:none}
+script{display:none!important}
+html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}
+body{margin:0}
+a{background:transparent}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em;margin:.67em 0}
+abbr[title]{border-bottom:1px dotted}
+b,strong{font-weight:bold}
+dfn{font-style:italic}
+hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0}
+mark{background:#ff0;color:#000}
+code,kbd,pre,samp{font-family:monospace;font-size:1em}
+pre{white-space:pre-wrap}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.5em}
+sub{bottom:-.25em}
+img{border:0}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
+button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
+button,input{line-height:normal}
+button,select{text-transform:none}
+button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}
+button[disabled],html input[disabled]{cursor:default}
+input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}
+input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
+input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
+*,*:before,*:after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
+html,body{font-size:100%}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto}
+a:hover{cursor:pointer}
+img,object,embed{max-width:100%;height:auto}
+object,embed{height:100%}
+img{-ms-interpolation-mode:bicubic}
+#map_canvas img,#map_canvas embed,#map_canvas object,.map_canvas img,.map_canvas embed,.map_canvas object{max-width:none!important}
+.left{float:left!important}
+.right{float:right!important}
+.text-left{text-align:left!important}
+.text-right{text-align:right!important}
+.text-center{text-align:center!important}
+.text-justify{text-align:justify!important}
+.hide{display:none}
+.antialiased,body{-webkit-font-smoothing:antialiased}
+img{display:inline-block;vertical-align:middle}
+textarea{height:auto;min-height:50px}
+select{width:100%}
+p.lead,.paragraph.lead>p,#preamble>.sectionbody>.paragraph:first-of-type p{font-size:1.21875em;line-height:1.6}
+.subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0;direction:ltr}
+a{color:#2156a5;text-decoration:underline;line-height:inherit}
+a:hover,a:focus{color:#1d4b8f}
+a img{border:none}
+p{font-family:inherit;font-weight:400;font-size:1em;line-height:1.6;margin-bottom:1.25em;text-rendering:optimizeLegibility}
+p aside{font-size:.875em;line-height:1.35;font-style:italic}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{font-family:"Open Sans","DejaVu Sans",sans-serif;font-weight:300;font-style:normal;color:#ba3925;text-rendering:optimizeLegibility;margin-top:1em;margin-bottom:.5em;line-height:1.0125em}
+h1 small,h2 small,h3 small,#toctitle small,.sidebarblock>.content>.title small,h4 small,h5 small,h6 small{font-size:60%;color:#e99b8f;line-height:0}
+h1{font-size:2.125em}
+h2{font-size:1.6875em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.375em}
+h4,h5{font-size:1.125em}
+h6{font-size:1em}
+hr{border:solid #ddddd8;border-width:1px 0 0;clear:both;margin:1.25em 0 1.1875em;height:0}
+em,i{font-style:italic;line-height:inherit}
+strong,b{font-weight:bold;line-height:inherit}
+small{font-size:60%;line-height:inherit}
+code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
+ul,ol,dl{font-size:1em;line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
+ul,ol,ul.no-bullet,ol.no-bullet{margin-left:1.5em}
+ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0;font-size:1em}
+ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
+ul.square{list-style-type:square}
+ul.circle{list-style-type:circle}
+ul.disc{list-style-type:disc}
+ul.no-bullet{list-style:none}
+ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
+dl dt{margin-bottom:.3125em;font-weight:bold}
+dl dd{margin-bottom:1.25em}
+abbr,acronym{text-transform:uppercase;font-size:90%;color:rgba(0,0,0,.8);border-bottom:1px dotted #ddd;cursor:help}
+abbr{text-transform:none}
+blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
+blockquote cite{display:block;font-size:.9375em;color:rgba(0,0,0,.6)}
+blockquote cite:before{content:"\2014 \0020"}
+blockquote cite a,blockquote cite a:visited{color:rgba(0,0,0,.6)}
+blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
+@media only screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
+h1{font-size:2.75em}
+h2{font-size:2.3125em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
+h4{font-size:1.4375em}}table{background:#fff;margin-bottom:1.25em;border:solid 1px #dedede}
+table thead,table tfoot{background:#f7f8f7;font-weight:bold}
+table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
+table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
+table tr.even,table tr.alt,table tr:nth-of-type(even){background:#f8f8f7}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{display:table-cell;line-height:1.6}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
+h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.clearfix:before,.clearfix:after,.float-group:before,.float-group:after{content:" ";display:table}
+.clearfix:after,.float-group:after{clear:both}
+*:not(pre)>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background-color:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
+pre,pre>code{line-height:1.45;color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono","Menlo",monospace;font-weight:400;text-rendering:optimizeSpeed}
+.keyseq{color:rgba(51,51,51,.8)}
+kbd{display:inline-block;color:rgba(0,0,0,.8);font-size:.75em;line-height:1.4;background-color:#f7f7f7;border:1px solid #ccc;-webkit-border-radius:3px;border-radius:3px;-webkit-box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em white inset;box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em #fff inset;margin:-.15em .15em 0 .15em;padding:.2em .6em .2em .5em;vertical-align:middle;white-space:nowrap}
+.keyseq kbd:first-child{margin-left:0}
+.keyseq kbd:last-child{margin-right:0}
+.menuseq,.menu{color:rgba(0,0,0,.8)}
+b.button:before,b.button:after{position:relative;top:-1px;font-weight:400}
+b.button:before{content:"[";padding:0 3px 0 2px}
+b.button:after{content:"]";padding:0 2px 0 3px}
+p a>code:hover{color:rgba(0,0,0,.9)}
+#header,#content,#footnotes,#footer{width:100%;margin-left:auto;margin-right:auto;margin-top:0;margin-bottom:0;max-width:62.5em;*zoom:1;position:relative;padding-left:.9375em;padding-right:.9375em}
+#header:before,#header:after,#content:before,#content:after,#footnotes:before,#footnotes:after,#footer:before,#footer:after{content:" ";display:table}
+#header:after,#content:after,#footnotes:after,#footer:after{clear:both}
+#content{margin-top:1.25em}
+#content:before{content:none}
+#header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
+#header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #ddddd8}
+#header>h1:only-child,body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #ddddd8;padding-bottom:8px}
+#header .details{border-bottom:1px solid #ddddd8;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:-ms-flexbox;display:-webkit-flex;display:flex;-ms-flex-flow:row wrap;-webkit-flex-flow:row wrap;flex-flow:row wrap}
+#header .details span:first-child{margin-left:-.125em}
+#header .details span.email a{color:rgba(0,0,0,.85)}
+#header .details br{display:none}
+#header .details br+span:before{content:"\00a0\2013\00a0"}
+#header .details br+span.author:before{content:"\00a0\22c5\00a0";color:rgba(0,0,0,.85)}
+#header .details br+span#revremark:before{content:"\00a0|\00a0"}
+#header #revnumber{text-transform:capitalize}
+#header #revnumber:after{content:"\00a0"}
+#content>h1:first-child:not([class]){color:rgba(0,0,0,.85);border-bottom:1px solid #ddddd8;padding-bottom:8px;margin-top:0;padding-top:1rem;margin-bottom:1.25rem}
+#toc{border-bottom:1px solid #efefed;padding-bottom:.5em}
+#toc>ul{margin-left:.125em}
+#toc ul.sectlevel0>li>a{font-style:italic}
+#toc ul.sectlevel0 ul.sectlevel1{margin:.5em 0}
+#toc ul{font-family:"Open Sans","DejaVu Sans",sans-serif;list-style-type:none}
+#toc a{text-decoration:none}
+#toc a:active{text-decoration:underline}
+#toctitle{color:#7a2518;font-size:1.2em}
+@media only screen and (min-width:768px){#toctitle{font-size:1.375em}
+body.toc2{padding-left:15em;padding-right:0}
+#toc.toc2{margin-top:0!important;background-color:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #efefed;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
+#toc.toc2 #toctitle{margin-top:0;font-size:1.2em}
+#toc.toc2>ul{font-size:.9em;margin-bottom:0}
+#toc.toc2 ul ul{margin-left:0;padding-left:1em}
+#toc.toc2 ul.sectlevel0 ul.sectlevel1{padding-left:0;margin-top:.5em;margin-bottom:.5em}
+body.toc2.toc-right{padding-left:0;padding-right:15em}
+body.toc2.toc-right #toc.toc2{border-right-width:0;border-left:1px solid #efefed;left:auto;right:0}}@media only screen and (min-width:1280px){body.toc2{padding-left:20em;padding-right:0}
+#toc.toc2{width:20em}
+#toc.toc2 #toctitle{font-size:1.375em}
+#toc.toc2>ul{font-size:.95em}
+#toc.toc2 ul ul{padding-left:1.25em}
+body.toc2.toc-right{padding-left:0;padding-right:20em}}#content #toc{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
+#content #toc>:first-child{margin-top:0}
+#content #toc>:last-child{margin-bottom:0}
+#footer{max-width:100%;background-color:rgba(0,0,0,.8);padding:1.25em}
+#footer-text{color:rgba(255,255,255,.8);line-height:1.44}
+.sect1{padding-bottom:.625em}
+@media only screen and (min-width:768px){.sect1{padding-bottom:1.25em}}.sect1+.sect1{border-top:1px solid #efefed}
+#content h1>a.anchor,h2>a.anchor,h3>a.anchor,#toctitle>a.anchor,.sidebarblock>.content>.title>a.anchor,h4>a.anchor,h5>a.anchor,h6>a.anchor{position:absolute;z-index:1001;width:1.5ex;margin-left:-1.5ex;display:block;text-decoration:none!important;visibility:hidden;text-align:center;font-weight:400}
+#content h1>a.anchor:before,h2>a.anchor:before,h3>a.anchor:before,#toctitle>a.anchor:before,.sidebarblock>.content>.title>a.anchor:before,h4>a.anchor:before,h5>a.anchor:before,h6>a.anchor:before{content:"\00A7";font-size:.85em;display:block;padding-top:.1em}
+#content h1:hover>a.anchor,#content h1>a.anchor:hover,h2:hover>a.anchor,h2>a.anchor:hover,h3:hover>a.anchor,#toctitle:hover>a.anchor,.sidebarblock>.content>.title:hover>a.anchor,h3>a.anchor:hover,#toctitle>a.anchor:hover,.sidebarblock>.content>.title>a.anchor:hover,h4:hover>a.anchor,h4>a.anchor:hover,h5:hover>a.anchor,h5>a.anchor:hover,h6:hover>a.anchor,h6>a.anchor:hover{visibility:visible}
+#content h1>a.link,h2>a.link,h3>a.link,#toctitle>a.link,.sidebarblock>.content>.title>a.link,h4>a.link,h5>a.link,h6>a.link{color:#ba3925;text-decoration:none}
+#content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
+.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
+.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
+table.tableblock>caption.title{white-space:nowrap;overflow:visible;max-width:0}
+.paragraph.lead>p,#preamble>.sectionbody>.paragraph:first-of-type p{color:rgba(0,0,0,.85)}
+table.tableblock #preamble>.sectionbody>.paragraph:first-of-type p{font-size:inherit}
+.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
+.admonitionblock>table td.icon{text-align:center;width:80px}
+.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #ddddd8;color:rgba(0,0,0,.6)}
+.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content{border-style:solid;border-width:1px;border-color:#e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;-webkit-border-radius:4px;border-radius:4px}
+.exampleblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child{margin-bottom:0}
+.sidebarblock{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
+.sidebarblock>:first-child{margin-top:0}
+.sidebarblock>:last-child{margin-bottom:0}
+.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
+.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.literalblock pre,.listingblock pre:not(.highlight),.listingblock pre[class="highlight"],.listingblock pre[class^="highlight "],.listingblock pre.CodeRay,.listingblock pre.prettyprint{background:#f7f7f8}
+.sidebarblock .literalblock pre,.sidebarblock .listingblock pre:not(.highlight),.sidebarblock .listingblock pre[class="highlight"],.sidebarblock .listingblock pre[class^="highlight "],.sidebarblock .listingblock pre.CodeRay,.sidebarblock .listingblock pre.prettyprint{background:#f2f1f1}
+.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{-webkit-border-radius:4px;border-radius:4px;word-wrap:break-word;padding:1em;font-size:.8125em}
+.literalblock pre.nowrap,.literalblock pre[class].nowrap,.listingblock pre.nowrap,.listingblock pre[class].nowrap{overflow-x:auto;white-space:pre;word-wrap:normal}
+@media only screen and (min-width:768px){.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{font-size:.90625em}}@media only screen and (min-width:1280px){.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{font-size:1em}}.literalblock.output pre{color:#f7f7f8;background-color:rgba(0,0,0,.9)}
+.listingblock pre.highlightjs{padding:0}
+.listingblock pre.highlightjs>code{padding:1em;-webkit-border-radius:4px;border-radius:4px}
+.listingblock pre.prettyprint{border-width:0}
+.listingblock>.content{position:relative}
+.listingblock code[data-lang]:before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:#999}
+.listingblock:hover code[data-lang]:before{display:block}
+.listingblock.terminal pre .command:before{content:attr(data-prompt);padding-right:.5em;color:#999}
+.listingblock.terminal pre .command:not([data-prompt]):before{content:"$"}
+table.pyhltable{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.pyhltable td{vertical-align:top;padding-top:0;padding-bottom:0}
+table.pyhltable td.code{padding-left:.75em;padding-right:0}
+pre.pygments .lineno,table.pyhltable td:not(.code){color:#999;padding-left:0;padding-right:.5em;border-right:1px solid #ddddd8}
+pre.pygments .lineno{display:inline-block;margin-right:.25em}
+table.pyhltable .linenodiv{background:none!important;padding-right:0!important}
+.quoteblock{margin:0 1em 1.25em 1.5em;display:table}
+.quoteblock>.title{margin-left:-1.5em;margin-bottom:.75em}
+.quoteblock blockquote,.quoteblock blockquote p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
+.quoteblock blockquote{margin:0;padding:0;border:0}
+.quoteblock blockquote:before{content:"\201c";float:left;font-size:2.75em;font-weight:bold;line-height:.6em;margin-left:-.6em;color:#7a2518;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+.quoteblock blockquote>.paragraph:last-child p{margin-bottom:0}
+.quoteblock .attribution{margin-top:.5em;margin-right:.5ex;text-align:right}
+.quoteblock .quoteblock{margin-left:0;margin-right:0;padding:.5em 0;border-left:3px solid rgba(0,0,0,.6)}
+.quoteblock .quoteblock blockquote{padding:0 0 0 .75em}
+.quoteblock .quoteblock blockquote:before{display:none}
+.verseblock{margin:0 1em 1.25em 1em}
+.verseblock pre{font-family:"Open Sans","DejaVu Sans",sans;font-size:1.15rem;color:rgba(0,0,0,.85);font-weight:300;text-rendering:optimizeLegibility}
+.verseblock pre strong{font-weight:400}
+.verseblock .attribution{margin-top:1.25rem;margin-left:.5ex}
+.quoteblock .attribution,.verseblock .attribution{font-size:.9375em;line-height:1.45;font-style:italic}
+.quoteblock .attribution br,.verseblock .attribution br{display:none}
+.quoteblock .attribution cite,.verseblock .attribution cite{display:block;letter-spacing:-.05em;color:rgba(0,0,0,.6)}
+.quoteblock.abstract{margin:0 0 1.25em 0;display:block}
+.quoteblock.abstract blockquote,.quoteblock.abstract blockquote p{text-align:left;word-spacing:0}
+.quoteblock.abstract blockquote:before,.quoteblock.abstract blockquote p:first-of-type:before{display:none}
+table.tableblock{max-width:100%;border-collapse:separate}
+table.tableblock td>.paragraph:last-child p>p:last-child,table.tableblock th>p:last-child,table.tableblock td>p:last-child{margin-bottom:0}
+table.spread{width:100%}
+table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
+table.grid-all th.tableblock,table.grid-all td.tableblock{border-width:0 1px 1px 0}
+table.grid-all tfoot>tr>th.tableblock,table.grid-all tfoot>tr>td.tableblock{border-width:1px 1px 0 0}
+table.grid-cols th.tableblock,table.grid-cols td.tableblock{border-width:0 1px 0 0}
+table.grid-all *>tr>.tableblock:last-child,table.grid-cols *>tr>.tableblock:last-child{border-right-width:0}
+table.grid-rows th.tableblock,table.grid-rows td.tableblock{border-width:0 0 1px 0}
+table.grid-all tbody>tr:last-child>th.tableblock,table.grid-all tbody>tr:last-child>td.tableblock,table.grid-all thead:last-child>tr>th.tableblock,table.grid-rows tbody>tr:last-child>th.tableblock,table.grid-rows tbody>tr:last-child>td.tableblock,table.grid-rows thead:last-child>tr>th.tableblock{border-bottom-width:0}
+table.grid-rows tfoot>tr>th.tableblock,table.grid-rows tfoot>tr>td.tableblock{border-width:1px 0 0 0}
+table.frame-all{border-width:1px}
+table.frame-sides{border-width:0 1px}
+table.frame-topbot{border-width:1px 0}
+th.halign-left,td.halign-left{text-align:left}
+th.halign-right,td.halign-right{text-align:right}
+th.halign-center,td.halign-center{text-align:center}
+th.valign-top,td.valign-top{vertical-align:top}
+th.valign-bottom,td.valign-bottom{vertical-align:bottom}
+th.valign-middle,td.valign-middle{vertical-align:middle}
+table thead th,table tfoot th{font-weight:bold}
+tbody tr th{display:table-cell;line-height:1.6;background:#f7f8f7}
+tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
+p.tableblock>code:only-child{background:none;padding:0}
+p.tableblock{font-size:1em}
+td>div.verse{white-space:pre}
+ol{margin-left:1.75em}
+ul li ol{margin-left:1.5em}
+dl dd{margin-left:1.125em}
+dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
+ol>li p,ul>li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+ul.unstyled,ol.unnumbered,ul.checklist,ul.none{list-style-type:none}
+ul.unstyled,ol.unnumbered,ul.checklist{margin-left:.625em}
+ul.checklist li>p:first-child>.fa-check-square-o:first-child,ul.checklist li>p:first-child>input[type="checkbox"]:first-child{margin-right:.25em}
+ul.checklist li>p:first-child>input[type="checkbox"]:first-child{position:relative;top:1px}
+ul.inline{margin:0 auto .625em auto;margin-left:-1.375em;margin-right:0;padding:0;list-style:none;overflow:hidden}
+ul.inline>li{list-style:none;float:left;margin-left:1.375em;display:block}
+ul.inline>li>*{display:block}
+.unstyled dl dt{font-weight:400;font-style:normal}
+ol.arabic{list-style-type:decimal}
+ol.decimal{list-style-type:decimal-leading-zero}
+ol.loweralpha{list-style-type:lower-alpha}
+ol.upperalpha{list-style-type:upper-alpha}
+ol.lowerroman{list-style-type:lower-roman}
+ol.upperroman{list-style-type:upper-roman}
+ol.lowergreek{list-style-type:lower-greek}
+.hdlist>table,.colist>table{border:0;background:none}
+.hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
+td.hdlist1{padding-right:.75em;font-weight:bold}
+td.hdlist1,td.hdlist2{vertical-align:top}
+.literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
+.colist>table tr>td:first-of-type{padding:0 .75em;line-height:1}
+.colist>table tr>td:last-of-type{padding:.25em 0}
+.thumb,.th{line-height:0;display:inline-block;border:solid 4px #fff;-webkit-box-shadow:0 0 0 1px #ddd;box-shadow:0 0 0 1px #ddd}
+.imageblock.left,.imageblock[style*="float: left"]{margin:.25em .625em 1.25em 0}
+.imageblock.right,.imageblock[style*="float: right"]{margin:.25em 0 1.25em .625em}
+.imageblock>.title{margin-bottom:0}
+.imageblock.thumb,.imageblock.th{border-width:6px}
+.imageblock.thumb>.title,.imageblock.th>.title{padding:0 .125em}
+.image.left,.image.right{margin-top:.25em;margin-bottom:.25em;display:inline-block;line-height:0}
+.image.left{margin-right:.625em}
+.image.right{margin-left:.625em}
+a.image{text-decoration:none}
+span.footnote,span.footnoteref{vertical-align:super;font-size:.875em}
+span.footnote a,span.footnoteref a{text-decoration:none}
+span.footnote a:active,span.footnoteref a:active{text-decoration:underline}
+#footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
+#footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em 0;border-width:1px 0 0 0}
+#footnotes .footnote{padding:0 .375em;line-height:1.3;font-size:.875em;margin-left:1.2em;text-indent:-1.2em;margin-bottom:.2em}
+#footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none}
+#footnotes .footnote:last-of-type{margin-bottom:0}
+#content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
+.gist .file-data>table{border:0;background:#fff;width:100%;margin-bottom:0}
+.gist .file-data>table td.line-data{width:99%}
+div.unbreakable{page-break-inside:avoid}
+.big{font-size:larger}
+.small{font-size:smaller}
+.underline{text-decoration:underline}
+.overline{text-decoration:overline}
+.line-through{text-decoration:line-through}
+.aqua{color:#00bfbf}
+.aqua-background{background-color:#00fafa}
+.black{color:#000}
+.black-background{background-color:#000}
+.blue{color:#0000bf}
+.blue-background{background-color:#0000fa}
+.fuchsia{color:#bf00bf}
+.fuchsia-background{background-color:#fa00fa}
+.gray{color:#606060}
+.gray-background{background-color:#7d7d7d}
+.green{color:#006000}
+.green-background{background-color:#007d00}
+.lime{color:#00bf00}
+.lime-background{background-color:#00fa00}
+.maroon{color:#600000}
+.maroon-background{background-color:#7d0000}
+.navy{color:#000060}
+.navy-background{background-color:#00007d}
+.olive{color:#606000}
+.olive-background{background-color:#7d7d00}
+.purple{color:#600060}
+.purple-background{background-color:#7d007d}
+.red{color:#bf0000}
+.red-background{background-color:#fa0000}
+.silver{color:#909090}
+.silver-background{background-color:#bcbcbc}
+.teal{color:#006060}
+.teal-background{background-color:#007d7d}
+.white{color:#bfbfbf}
+.white-background{background-color:#fafafa}
+.yellow{color:#bfbf00}
+.yellow-background{background-color:#fafa00}
+span.icon>.fa{cursor:default}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note:before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip:before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning:before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution:before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important:before{content:"\f06a";color:#bf0000}
+.conum[data-value]{display:inline-block;color:#fff!important;background-color:rgba(0,0,0,.8);-webkit-border-radius:100px;border-radius:100px;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]:after{content:attr(data-value)}
+pre .conum[data-value]{position:relative;top:-.125em}
+b.conum *{color:inherit!important}
+.conum:not([data-value]):empty{display:none}
+h1,h2{letter-spacing:-.01em}
+dt,th.tableblock,td.content{text-rendering:optimizeLegibility}
+p,td.content{letter-spacing:-.01em}
+p strong,td.content strong{letter-spacing:-.005em}
+p,blockquote,dt,td.content{font-size:1.0625rem}
+p{margin-bottom:1.25rem}
+.sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
+.exampleblock>.content{background-color:#fffef7;border-color:#e0e0dc;-webkit-box-shadow:0 1px 4px #e0e0dc;box-shadow:0 1px 4px #e0e0dc}
+.print-only{display:none!important}
+@media print{@page{margin:1.25cm .75cm}
+*{-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}
+a{color:inherit!important;text-decoration:underline!important}
+a.bare,a[href^="#"],a[href^="mailto:"]{text-decoration:none!important}
+a[href^="http:"]:not(.bare):after,a[href^="https:"]:not(.bare):after,a[href^="mailto:"]:not(.bare):after{content:"(" attr(href) ")";display:inline-block;font-size:.875em;padding-left:.25em}
+abbr[title]:after{content:" (" attr(title) ")"}
+pre,blockquote,tr,img{page-break-inside:avoid}
+thead{display:table-header-group}
+img{max-width:100%!important}
+p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
+h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#toc,.sidebarblock,.exampleblock>.content{background:none!important}
+#toc{border-bottom:1px solid #ddddd8!important;padding-bottom:0!important}
+.sect1{padding-bottom:0!important}
+.sect1+.sect1{border:0!important}
+#header>h1:first-child{margin-top:1.25rem}
+body.book #header{text-align:center}
+body.book #header>h1:first-child{border:0!important;margin:2.5em 0 1em 0}
+body.book #header .details{border:0!important;display:block;padding:0!important}
+body.book #header .details span:first-child{margin-left:0!important}
+body.book #header .details br{display:block}
+body.book #header .details br+span:before{content:none!important}
+body.book #toc{border:0!important;text-align:left!important;padding:0!important;margin:0!important}
+body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-break-before:always}
+.listingblock code[data-lang]:before{display:block}
+#footer{background:none!important;padding:0 .9375em}
+#footer-text{color:rgba(0,0,0,.6)!important;font-size:.9em}
+.hide-on-print{display:none!important}
+.print-only{display:block!important}
+.hide-for-print{display:none!important}
+.show-for-print{display:inherit!important}}
+
+
+</style>
+<style>
+.listingblock .pygments .hll { background-color: #ffffcc }
+.listingblock .pygments, .listingblock .pygments code { background: #f8f8f8; }
+.listingblock .pygments .tok-c { color: #408080; font-style: italic } /* Comment */
+.listingblock .pygments .tok-err { border: 1px solid #FF0000 } /* Error */
+.listingblock .pygments .tok-k { color: #008000; font-weight: bold } /* Keyword */
+.listingblock .pygments .tok-o { color: #666666 } /* Operator */
+.listingblock .pygments .tok-ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+.listingblock .pygments .tok-cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.listingblock .pygments .tok-cp { color: #BC7A00 } /* Comment.Preproc */
+.listingblock .pygments .tok-cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+.listingblock .pygments .tok-c1 { color: #408080; font-style: italic } /* Comment.Single */
+.listingblock .pygments .tok-cs { color: #408080; font-style: italic } /* Comment.Special */
+.listingblock .pygments .tok-gd { color: #A00000 } /* Generic.Deleted */
+.listingblock .pygments .tok-ge { font-style: italic } /* Generic.Emph */
+.listingblock .pygments .tok-gr { color: #FF0000 } /* Generic.Error */
+.listingblock .pygments .tok-gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.listingblock .pygments .tok-gi { color: #00A000 } /* Generic.Inserted */
+.listingblock .pygments .tok-go { color: #888888 } /* Generic.Output */
+.listingblock .pygments .tok-gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.listingblock .pygments .tok-gs { font-weight: bold } /* Generic.Strong */
+.listingblock .pygments .tok-gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.listingblock .pygments .tok-gt { color: #0044DD } /* Generic.Traceback */
+.listingblock .pygments .tok-kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.listingblock .pygments .tok-kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.listingblock .pygments .tok-kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.listingblock .pygments .tok-kp { color: #008000 } /* Keyword.Pseudo */
+.listingblock .pygments .tok-kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.listingblock .pygments .tok-kt { color: #B00040 } /* Keyword.Type */
+.listingblock .pygments .tok-m { color: #666666 } /* Literal.Number */
+.listingblock .pygments .tok-s { color: #BA2121 } /* Literal.String */
+.listingblock .pygments .tok-na { color: #7D9029 } /* Name.Attribute */
+.listingblock .pygments .tok-nb { color: #008000 } /* Name.Builtin */
+.listingblock .pygments .tok-nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.listingblock .pygments .tok-no { color: #880000 } /* Name.Constant */
+.listingblock .pygments .tok-nd { color: #AA22FF } /* Name.Decorator */
+.listingblock .pygments .tok-ni { color: #999999; font-weight: bold } /* Name.Entity */
+.listingblock .pygments .tok-ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.listingblock .pygments .tok-nf { color: #0000FF } /* Name.Function */
+.listingblock .pygments .tok-nl { color: #A0A000 } /* Name.Label */
+.listingblock .pygments .tok-nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.listingblock .pygments .tok-nt { color: #008000; font-weight: bold } /* Name.Tag */
+.listingblock .pygments .tok-nv { color: #19177C } /* Name.Variable */
+.listingblock .pygments .tok-ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.listingblock .pygments .tok-w { color: #bbbbbb } /* Text.Whitespace */
+.listingblock .pygments .tok-mb { color: #666666 } /* Literal.Number.Bin */
+.listingblock .pygments .tok-mf { color: #666666 } /* Literal.Number.Float */
+.listingblock .pygments .tok-mh { color: #666666 } /* Literal.Number.Hex */
+.listingblock .pygments .tok-mi { color: #666666 } /* Literal.Number.Integer */
+.listingblock .pygments .tok-mo { color: #666666 } /* Literal.Number.Oct */
+.listingblock .pygments .tok-sa { color: #BA2121 } /* Literal.String.Affix */
+.listingblock .pygments .tok-sb { color: #BA2121 } /* Literal.String.Backtick */
+.listingblock .pygments .tok-sc { color: #BA2121 } /* Literal.String.Char */
+.listingblock .pygments .tok-dl { color: #BA2121 } /* Literal.String.Delimiter */
+.listingblock .pygments .tok-sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.listingblock .pygments .tok-s2 { color: #BA2121 } /* Literal.String.Double */
+.listingblock .pygments .tok-se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.listingblock .pygments .tok-sh { color: #BA2121 } /* Literal.String.Heredoc */
+.listingblock .pygments .tok-si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.listingblock .pygments .tok-sx { color: #008000 } /* Literal.String.Other */
+.listingblock .pygments .tok-sr { color: #BB6688 } /* Literal.String.Regex */
+.listingblock .pygments .tok-s1 { color: #BA2121 } /* Literal.String.Single */
+.listingblock .pygments .tok-ss { color: #19177C } /* Literal.String.Symbol */
+.listingblock .pygments .tok-bp { color: #008000 } /* Name.Builtin.Pseudo */
+.listingblock .pygments .tok-fm { color: #0000FF } /* Name.Function.Magic */
+.listingblock .pygments .tok-vc { color: #19177C } /* Name.Variable.Class */
+.listingblock .pygments .tok-vg { color: #19177C } /* Name.Variable.Global */
+.listingblock .pygments .tok-vi { color: #19177C } /* Name.Variable.Instance */
+.listingblock .pygments .tok-vm { color: #19177C } /* Name.Variable.Magic */
+.listingblock .pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script type="text/javascript" async="" src="./Safe Publication and Safe Initialization in Java_files/analytics.js.download"></script><script async="" src="./Safe Publication and Safe Initialization in Java_files/js"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-127307490-1');
+</script>
+</head>
+<body class="article">
+<div id="header">
+<h1>Safe Publication and Safe Initialization in Java</h1>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="https://shipilev.net/blog/2014/safe-public-construction/#_preface">Preface</a></li>
+<li><a href="https://shipilev.net/blog/2014/safe-public-construction/#_theory">Theory</a>
+<ul class="sectlevel2">
+<li><a href="https://shipilev.net/blog/2014/safe-public-construction/#_singletons_and_singleton_factories">Singletons and Singleton Factories</a></li>
+<li><a href="https://shipilev.net/blog/2014/safe-public-construction/#_safe_publication">Safe Publication</a></li>
+<li><a href="https://shipilev.net/blog/2014/safe-public-construction/#_safe_initialization">Safe Initialization</a></li>
+</ul>
+</li>
+<li><a href="https://shipilev.net/blog/2014/safe-public-construction/#_practice">Practice</a>
+<ul class="sectlevel2">
+<li><a href="https://shipilev.net/blog/2014/safe-public-construction/#_correctness">Correctness</a>
+<ul class="sectlevel3">
+<li><a href="https://shipilev.net/blog/2014/safe-public-construction/#_x86">x86</a></li>
+<li><a href="https://shipilev.net/blog/2014/safe-public-construction/#_arm">ARM</a></li>
+</ul>
+</li>
+<li><a href="https://shipilev.net/blog/2014/safe-public-construction/#_performance">Performance</a>
+<ul class="sectlevel3">
+<li><a href="https://shipilev.net/blog/2014/safe-public-construction/#_x86_2">x86</a></li>
+<li><a href="https://shipilev.net/blog/2014/safe-public-construction/#_arm_2">ARM</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="https://shipilev.net/blog/2014/safe-public-construction/#_conclusion">Conclusion</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Aleksey Shipilёv,
+ <a href="http://twitter.com/shipilev">@shipilev</a>,
+ <a href="mailto:aleksey@shipilev.net">aleksey@shipilev.net</a></p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tbody><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+This post is also available in <a href="https://shipilev.net/blog/2014/safe-public-construction/article.epub">ePUB</a> and <a href="https://shipilev.net/blog/2014/safe-public-construction/article.mobi">mobi</a>.
+</td>
+</tr>
+</tbody></table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_preface">Preface</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Most formalisms in Java Memory Model are usable only as the deep reference to explain what constitutes the legal outcomes in Java programs. If you don’t believe me, go and read <a href="http://shipilev.net/blog/2014/jmm-pragmatics/">"Java Memory Model Pragmatics" transcript</a> again. Most people are trying to digest the JMM rules as stated, and figure out the high-level constructions that are usable without causing developers' heads to explode.</p>
+</div>
+<div class="paragraph">
+<p>Two of these constructions are "Safe Publication" and "Safe Initialization". We will take a look at Singletons to explain both constructions. It is important to read these singleton examples as a tutorial in Java concurrency, and not as a promotion for this particular design pattern. The resurgence of <code>lazy val</code>-like language constructs often forces us to go for the same pattern anyhow.</p>
+</div>
+<div class="paragraph">
+<p>This post is a translation and update of a 2 year old post I wrote in Russian. Thanks to <a href="https://twitter.com/gvsmirnov">Gleb Smirnov</a>, <a href="https://twitter.com/nitsanw">Nitsan Wakart</a>, and <a href="https://twitter.com/joejkearney">Joe Kearney</a> for reviews for content and grammar!</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_theory">Theory</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_singletons_and_singleton_factories">Singletons and Singleton Factories</h3>
+<div class="paragraph">
+<p>It is mildly irritating when people confuse <strong>Singletons</strong>, and <strong>Singleton Factories</strong>. For the sake of our discussion, we need to clearly separate these two notions. <strong>Singleton</strong> is an object that has only a single instance at every point of program life-cycle. <strong>Singleton Factory</strong> is an object that maintains <strong>Singletons</strong>. Of course, you can conflate these two in a single implementation, but that is not the point of this post.</p>
+</div>
+<div class="paragraph">
+<p>A reasonable <strong>SingletonFactory</strong> has a few properties:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>It provides the public API for getting a <strong>Singleton</strong> instance.</p>
+</li>
+<li>
+<p>It is thread-safe. No matter how many threads are requesting a <strong>Singleton</strong>, all threads will get the same <strong>Singleton</strong> instance, regardless of the current state.</p>
+</li>
+<li>
+<p>It is lazy. One can argue about this, but non-lazy factories are not interesting for our discussion. <strong>Singleton</strong> initialization should happen with the first request for a Singleton, not when <strong>Singleton</strong> class is initialized. If no one wants a Singleton instance, it should not be instantiated.</p>
+</li>
+<li>
+<p>It is efficient. The overheads for managing a <strong>Singleton</strong> state should be kept at minimum.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>One can be reasonably sure this is not a good <strong>SingletonFactory</strong>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="java"><span class="tok-kd">public</span> <span class="tok-kd">class</span> <span class="tok-nc">SynchronizedCLFactory</span> <span class="tok-o">{</span>
+  <span class="tok-kd">private</span> <span class="tok-n">Singleton</span> <span class="tok-n">instance</span><span class="tok-o">;</span>
+
+  <span class="tok-kd">public</span> <span class="tok-n">Singleton</span> <span class="tok-nf">get</span><span class="tok-o">()</span> <span class="tok-o">{</span>
+    <span class="tok-kd">synchronized</span> <span class="tok-o">(</span><span class="tok-k">this</span><span class="tok-o">)</span> <span class="tok-o">{</span>
+      <span class="tok-k">if</span> <span class="tok-o">(</span><span class="tok-n">instance</span> <span class="tok-o">==</span> <span class="tok-kc">null</span><span class="tok-o">)</span> <span class="tok-o">{</span>
+        <span class="tok-n">instance</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Singleton</span><span class="tok-o">();</span>
+      <span class="tok-o">}</span>
+      <span class="tok-k">return</span> <span class="tok-n">instance</span><span class="tok-o">;</span>
+    <span class="tok-o">}</span>
+  <span class="tok-o">}</span>
+<span class="tok-o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>…​as it has the properties (1), (2), and (3); but lacks property (4), since we do synchronization on every access for <code>get()</code>.</p>
+</div>
+<div class="paragraph">
+<p>This observation gives rise to <a href="http://en.wikipedia.org/wiki/Double-checked_locking">Double-Checked Locking</a> idiom. It tries to evade synchronization if <code>Singleton</code> is already initialized, which is a common case after the one-time synchronization. Understanding that, most people go ahead and write:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="java"><span class="tok-kd">public</span> <span class="tok-kd">class</span> <span class="tok-nc">UnsafeDCLFactory</span> <span class="tok-o">{</span>
+  <span class="tok-kd">private</span> <span class="tok-n">Singleton</span> <span class="tok-n">instance</span><span class="tok-o">;</span>
+
+  <span class="tok-kd">public</span> <span class="tok-n">Singleton</span> <span class="tok-nf">get</span><span class="tok-o">()</span> <span class="tok-o">{</span>
+    <span class="tok-k">if</span> <span class="tok-o">(</span><span class="tok-n">instance</span> <span class="tok-o">==</span> <span class="tok-kc">null</span><span class="tok-o">)</span> <span class="tok-o">{</span>  <span class="tok-c1">// read 1, check 1</span>
+      <span class="tok-kd">synchronized</span> <span class="tok-o">(</span><span class="tok-k">this</span><span class="tok-o">)</span> <span class="tok-o">{</span>
+        <span class="tok-k">if</span> <span class="tok-o">(</span><span class="tok-n">instance</span> <span class="tok-o">==</span> <span class="tok-kc">null</span><span class="tok-o">)</span> <span class="tok-o">{</span> <span class="tok-c1">// read 2, check 2</span>
+          <span class="tok-n">instance</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Singleton</span><span class="tok-o">();</span>
+        <span class="tok-o">}</span>
+      <span class="tok-o">}</span>
+    <span class="tok-o">}</span>
+    <span class="tok-k">return</span> <span class="tok-n">instance</span><span class="tok-o">;</span> <span class="tok-c1">// read 3</span>
+  <span class="tok-o">}</span>
+<span class="tok-o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Alas, this construction does not work properly for two reasons.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>One could think that after "check 1" had succeeded, the <code>Singleton</code> instance is properly initialized, and we can return it. That is <strong>not</strong> correct: the <code>Singleton</code> contents are only fully visible to the constructing thread! There are no guarantees that you will see <code>Singleton</code> contents properly in other threads, because you are racing against the initializer thread. Once again, <em>even if you have observed</em> the non-null <code>instance</code>, it does not mean you observe its internal state properly. In JMM-ese speak, there is no happens-before between the initializing stores in <code>Singleton</code> constructor, and the reads of <code>Singleton</code> fields.</p>
+</li>
+<li>
+<p>Notice that we do several reads of <code>instance</code> in this code, and at least "read 1" and "read 3" are the reads without any synchronization — that is, those reads are <em>racy</em>. One of the intents of the Java Memory Model is to allow reorderings for ordinary reads, otherwise the performance costs would be prohibitive. Specification-wise, as mentioned in <em>happens-before consistency</em> rules, a read action can observe the unordered write via the race. This is decided for each read action, regardless what other actions have already read the same location. In our example, that means that even though "read 1" could read non-null <code>instance</code>, the code then moves on to returning it, then it does <em>another</em> racy read, and it can read a null <code>instance</code>, which would be returned!</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_safe_publication">Safe Publication</h3>
+<div class="paragraph">
+<p>Now we are going to describe the concept of <em>safe publication</em>. Safe publication differs from a regular publication on one crucial point. <strong>Safe publication makes all the values written before the publication visible to all readers that observed the published object.</strong> It is a great simplification over the JMM rules of engagement with regards to actions, orders and such.</p>
+</div>
+<div class="paragraph">
+<p>There are a few trivial ways to achieve safe publication:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Exchange the reference through a properly locked field (<a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-17.html#jls-17.4.5">JLS 17.4.5</a>)</p>
+</li>
+<li>
+<p>Use static initializer to do the initializing stores (<a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-12.html#jls-12.4">JLS 12.4</a>)</p>
+</li>
+<li>
+<p>Exchange the reference via a volatile field (<a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-17.html#jls-17.4.5">JLS 17.4.5</a>), or <a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/atomic/package-summary.html">as the consequence of this rule</a>, via the AtomicX classes</p>
+</li>
+<li>
+<p>Initialize the value into a final field (<a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-17.html#jls-17.5">JLS 17.5</a>).</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Let us try to exploit each of those ways. The most trivial example is publishing through a properly locked field:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="java"><span class="tok-kd">public</span> <span class="tok-kd">class</span> <span class="tok-nc">SynchronizedCLFactory</span> <span class="tok-o">{</span>
+  <span class="tok-kd">private</span> <span class="tok-n">Singleton</span> <span class="tok-n">instance</span><span class="tok-o">;</span>
+
+  <span class="tok-kd">public</span> <span class="tok-n">Singleton</span> <span class="tok-nf">get</span><span class="tok-o">()</span> <span class="tok-o">{</span>
+    <span class="tok-kd">synchronized</span><span class="tok-o">(</span><span class="tok-k">this</span><span class="tok-o">)</span> <span class="tok-o">{</span>
+      <span class="tok-k">if</span> <span class="tok-o">(</span><span class="tok-n">instance</span> <span class="tok-o">==</span> <span class="tok-kc">null</span><span class="tok-o">)</span> <span class="tok-o">{</span>
+        <span class="tok-n">instance</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Singleton</span><span class="tok-o">();</span>
+      <span class="tok-o">}</span>
+      <span class="tok-k">return</span> <span class="tok-n">instance</span><span class="tok-o">;</span>
+    <span class="tok-o">}</span>
+  <span class="tok-o">}</span>
+<span class="tok-o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is the most trivial example spec-wise:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Mutual exclusion during <code>get()</code> calls allow only a single thread to do the <code>Singleton</code> initialization.</p>
+</li>
+<li>
+<p>The lock acquisition and releasing yield the synchronization actions that are bound in synchronizes-with, and then with happens-before. This forces the threads acquiring the lock to see the result of all the actions that were done before the lock release.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Classic holder idiom does roughly the same, but piggy-backs on class initialization locks. It safely publishes the object by doing the initialization in the static initializer. Note this thing is lazy, since we do not initialize <code>Holder</code> until the first call to <code>get()</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="java"><span class="tok-kd">public</span> <span class="tok-kd">class</span> <span class="tok-nc">HolderFactory</span> <span class="tok-o">{</span>
+  <span class="tok-kd">public</span> <span class="tok-kd">static</span> <span class="tok-n">Singleton</span> <span class="tok-nf">get</span><span class="tok-o">()</span> <span class="tok-o">{</span>
+    <span class="tok-k">return</span> <span class="tok-n">Holder</span><span class="tok-o">.</span><span class="tok-na">instance</span><span class="tok-o">;</span>
+  <span class="tok-o">}</span>
+
+  <span class="tok-kd">private</span> <span class="tok-kd">static</span> <span class="tok-kd">class</span> <span class="tok-nc">Holder</span> <span class="tok-o">{</span>
+    <span class="tok-kd">public</span> <span class="tok-kd">static</span> <span class="tok-kd">final</span> <span class="tok-n">Singleton</span> <span class="tok-n">instance</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Singleton</span><span class="tok-o">();</span>
+  <span class="tok-o">}</span>
+<span class="tok-o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is how it works spec-wise:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Class initialization is done under the lock, as per <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-12.html#jls-12.4.2">JLS 12.4.2</a>. Class initialization lock provides the mutual exclusion during the class initialization, that is, only a single thread can initialize the static fields.</p>
+</li>
+<li>
+<p>The release of class initialization lock plays the necessary role in establishing the happens-before relationships between the actions in static initializers and any users of the static fields. Naively speaking, the propagation of memory effects requires any reader of static field to acquire the class initialization lock first, but JLS allows to elide that locking, if the memory effects are still maintained. Indeed, modern VMs do this optimization routinely.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Now, get back to the infamous volatile DCL, that works because now we safely publish the singleton via <code>volatile</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="java"><span class="tok-kd">public</span> <span class="tok-kd">class</span> <span class="tok-nc">SafeDCLFactory</span> <span class="tok-o">{</span>
+  <span class="tok-kd">private</span> <span class="tok-kd">volatile</span> <span class="tok-n">Singleton</span> <span class="tok-n">instance</span><span class="tok-o">;</span>
+
+  <span class="tok-kd">public</span> <span class="tok-n">Singleton</span> <span class="tok-nf">get</span><span class="tok-o">()</span> <span class="tok-o">{</span>
+    <span class="tok-k">if</span> <span class="tok-o">(</span><span class="tok-n">instance</span> <span class="tok-o">==</span> <span class="tok-kc">null</span><span class="tok-o">)</span> <span class="tok-o">{</span>  <span class="tok-c1">// check 1</span>
+      <span class="tok-kd">synchronized</span><span class="tok-o">(</span><span class="tok-k">this</span><span class="tok-o">)</span> <span class="tok-o">{</span>
+        <span class="tok-k">if</span> <span class="tok-o">(</span><span class="tok-n">instance</span> <span class="tok-o">==</span> <span class="tok-kc">null</span><span class="tok-o">)</span> <span class="tok-o">{</span> <span class="tok-c1">// check 2</span>
+          <span class="tok-n">instance</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Singleton</span><span class="tok-o">();</span>
+        <span class="tok-o">}</span>
+      <span class="tok-o">}</span>
+    <span class="tok-o">}</span>
+    <span class="tok-k">return</span> <span class="tok-n">instance</span><span class="tok-o">;</span>
+  <span class="tok-o">}</span>
+<span class="tok-o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>How can this concept be backed up by spec? Here’s how:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Volatile write and volatile reads of <code>instance</code> yield the actions bound in synchronizes-with order, and therefore form happens-before. That means the actions preceding the volatile store (that is, the actions in constructors) precede any actions after reading the <code>instance</code>. In other words, those threads that called <code>get()</code> will observe a fully-constructed <code>Singleton</code>.</p>
+</li>
+<li>
+<p>Volatile reads and writes of <code>instance</code> yield synchronization actions that are totally ordered, and consistent with program order. Therefore two consecutive reads of <code>instance</code> are guaranteed to see the same value, in the absence of intervening write to <code>instance</code>.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>There is another way to provide the same guarantees: final fields. Since it is already too late to write to final field outside of constructor, we have to do a wrapper.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="java"><span class="tok-kd">public</span> <span class="tok-kd">class</span> <span class="tok-nc">FinalWrapperFactory</span> <span class="tok-o">{</span>
+  <span class="tok-kd">private</span> <span class="tok-n">FinalWrapper</span> <span class="tok-n">wrapper</span><span class="tok-o">;</span>
+
+  <span class="tok-kd">public</span> <span class="tok-n">Singleton</span> <span class="tok-nf">get</span><span class="tok-o">()</span> <span class="tok-o">{</span>
+    <span class="tok-n">FinalWrapper</span> <span class="tok-n">w</span> <span class="tok-o">=</span> <span class="tok-n">wrapper</span><span class="tok-o">;</span>
+    <span class="tok-k">if</span> <span class="tok-o">(</span><span class="tok-n">w</span> <span class="tok-o">==</span> <span class="tok-kc">null</span><span class="tok-o">)</span> <span class="tok-o">{</span> <span class="tok-c1">// check 1</span>
+      <span class="tok-kd">synchronized</span><span class="tok-o">(</span><span class="tok-k">this</span><span class="tok-o">)</span> <span class="tok-o">{</span>
+        <span class="tok-n">w</span> <span class="tok-o">=</span> <span class="tok-n">wrapper</span><span class="tok-o">;</span>
+        <span class="tok-k">if</span> <span class="tok-o">(</span><span class="tok-n">w</span> <span class="tok-o">==</span> <span class="tok-kc">null</span><span class="tok-o">)</span> <span class="tok-o">{</span> <span class="tok-c1">// check2</span>
+          <span class="tok-n">w</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">FinalWrapper</span><span class="tok-o">(</span><span class="tok-k">new</span> <span class="tok-n">Singleton</span><span class="tok-o">());</span>
+          <span class="tok-n">wrapper</span> <span class="tok-o">=</span> <span class="tok-n">w</span><span class="tok-o">;</span>
+        <span class="tok-o">}</span>
+      <span class="tok-o">}</span>
+    <span class="tok-o">}</span>
+    <span class="tok-k">return</span> <span class="tok-n">w</span><span class="tok-o">.</span><span class="tok-na">instance</span><span class="tok-o">;</span>
+  <span class="tok-o">}</span>
+
+  <span class="tok-kd">private</span> <span class="tok-kd">static</span> <span class="tok-kd">class</span> <span class="tok-nc">FinalWrapper</span> <span class="tok-o">{</span>
+    <span class="tok-kd">public</span> <span class="tok-kd">final</span> <span class="tok-n">Singleton</span> <span class="tok-n">instance</span><span class="tok-o">;</span>
+    <span class="tok-kd">public</span> <span class="tok-nf">FinalWrapper</span><span class="tok-o">(</span><span class="tok-n">Singleton</span> <span class="tok-n">instance</span><span class="tok-o">)</span> <span class="tok-o">{</span>
+      <span class="tok-k">this</span><span class="tok-o">.</span><span class="tok-na">instance</span> <span class="tok-o">=</span> <span class="tok-n">instance</span><span class="tok-o">;</span>
+    <span class="tok-o">}</span>
+  <span class="tok-o">}</span>
+<span class="tok-o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>How does it map to the actual spec?</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The constructor writing out the <code>final</code> field has a <em>freeze action</em> at the end. You can read more on final fields semantics in <a href="http://shipilev.net/blog/2014/jmm-pragmatics/#_part_v_finals/">"JMM Pragmatics"</a>. In short, if all the access chains contain the freeze action in-between the initializing stores to <code>Singleton</code> fields and the read of any <code>Singleton</code> field, we are allowed to observe only the initializing stores. Note this means if anyone had seen the <code>Singleton</code> instance before, then all bets are off: there is an access chain that bypasses the freeze action. In other words, it would be too late to "protect" already published object.</p>
+</li>
+<li>
+<p>Also notice we only do a single non-synchronized read of <code>wrapper</code>. Even though this read is racy, we recover from accidentally reading "null". If we were to read <code>wrapper</code> a second time before returning, that would set us up for an opportunity to read "null" again, and then return it.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>For completeness, let us do a factory that still publishes via the race, but does only a single racy read, hopefully recovering after reading "null":</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="java"><span class="tok-kd">public</span> <span class="tok-kd">class</span> <span class="tok-nc">UnsafeLocalDCLFactory</span> <span class="tok-kd">implements</span> <span class="tok-n">Factory</span> <span class="tok-o">{</span>
+  <span class="tok-kd">private</span> <span class="tok-n">Singleton</span> <span class="tok-n">instance</span><span class="tok-o">;</span> <span class="tok-c1">// deliberately non-volatile</span>
+
+  <span class="tok-nd">@Override</span>
+  <span class="tok-kd">public</span> <span class="tok-n">Singleton</span> <span class="tok-nf">getInstance</span><span class="tok-o">()</span> <span class="tok-o">{</span>
+    <span class="tok-n">Singleton</span> <span class="tok-n">res</span> <span class="tok-o">=</span> <span class="tok-n">instance</span><span class="tok-o">;</span>
+    <span class="tok-k">if</span> <span class="tok-o">(</span><span class="tok-n">res</span> <span class="tok-o">==</span> <span class="tok-kc">null</span><span class="tok-o">)</span> <span class="tok-o">{</span>
+      <span class="tok-kd">synchronized</span> <span class="tok-o">(</span><span class="tok-k">this</span><span class="tok-o">)</span> <span class="tok-o">{</span>
+        <span class="tok-n">res</span> <span class="tok-o">=</span> <span class="tok-n">instance</span><span class="tok-o">;</span>
+        <span class="tok-k">if</span> <span class="tok-o">(</span><span class="tok-n">res</span> <span class="tok-o">==</span> <span class="tok-kc">null</span><span class="tok-o">)</span> <span class="tok-o">{</span>
+           <span class="tok-n">res</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Singleton</span><span class="tok-o">();</span>
+           <span class="tok-n">instance</span> <span class="tok-o">=</span> <span class="tok-n">res</span><span class="tok-o">;</span>
+        <span class="tok-o">}</span>
+      <span class="tok-o">}</span>
+    <span class="tok-o">}</span>
+    <span class="tok-k">return</span> <span class="tok-n">res</span><span class="tok-o">;</span>
+  <span class="tok-o">}</span>
+<span class="tok-o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The introduction of local variable here is a correctness fix, but only partial: there still no happens-before between publishing the <code>Singleton</code> instance, and reading of any of its fields. We are only protecting ourselves from returning "null" instead of <code>Singleton</code> instance. The same trick can also be regarded as a performance optimization for <code>SafeDCLFactory</code>, i.e. doing only a single volatile read, yielding:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="java"><span class="tok-kd">public</span> <span class="tok-kd">class</span> <span class="tok-nc">SafeLocalDCLFactory</span> <span class="tok-kd">implements</span> <span class="tok-n">Factory</span> <span class="tok-o">{</span>
+  <span class="tok-kd">private</span> <span class="tok-kd">volatile</span> <span class="tok-n">Singleton</span> <span class="tok-n">instance</span><span class="tok-o">;</span>
+
+  <span class="tok-nd">@Override</span>
+  <span class="tok-kd">public</span> <span class="tok-n">Singleton</span> <span class="tok-nf">getInstance</span><span class="tok-o">()</span> <span class="tok-o">{</span>
+    <span class="tok-n">Singleton</span> <span class="tok-n">res</span> <span class="tok-o">=</span> <span class="tok-n">instance</span><span class="tok-o">;</span>
+    <span class="tok-k">if</span> <span class="tok-o">(</span><span class="tok-n">res</span> <span class="tok-o">==</span> <span class="tok-kc">null</span><span class="tok-o">)</span> <span class="tok-o">{</span>
+      <span class="tok-kd">synchronized</span> <span class="tok-o">(</span><span class="tok-k">this</span><span class="tok-o">)</span> <span class="tok-o">{</span>
+        <span class="tok-n">res</span> <span class="tok-o">=</span> <span class="tok-n">instance</span><span class="tok-o">;</span>
+        <span class="tok-k">if</span> <span class="tok-o">(</span><span class="tok-n">res</span> <span class="tok-o">==</span> <span class="tok-kc">null</span><span class="tok-o">)</span> <span class="tok-o">{</span>
+          <span class="tok-n">res</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Singleton</span><span class="tok-o">();</span>
+          <span class="tok-n">instance</span> <span class="tok-o">=</span> <span class="tok-n">res</span><span class="tok-o">;</span>
+        <span class="tok-o">}</span>
+      <span class="tok-o">}</span>
+    <span class="tok-o">}</span>
+    <span class="tok-k">return</span> <span class="tok-n">res</span><span class="tok-o">;</span>
+  <span class="tok-o">}</span>
+<span class="tok-o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There, these are the basic idioms for publishing.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_safe_initialization">Safe Initialization</h3>
+<div class="paragraph">
+<p>Moving on. Java allows us to declare an object in a manner always safe for publication, that is, provides us with an opportunity for <em>safe initialization</em>. <strong>Safe initialization makes all values initialized in constructor visible to all readers that observed the object</strong>, regardless of whether the object was safely published or not. Java Memory Model guarantees this if all the fields in object are <code>final</code> and there is no leakage of the under-initialized object from constructor. This is an example of safe initialization:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="java"><span class="tok-kd">public</span> <span class="tok-kd">class</span> <span class="tok-nc">SafeSingleton</span> <span class="tok-kd">implements</span> <span class="tok-n">Singleton</span> <span class="tok-o">{</span>
+  <span class="tok-kd">final</span> <span class="tok-n">Object</span> <span class="tok-n">obj1</span><span class="tok-o">;</span>
+  <span class="tok-kd">final</span> <span class="tok-n">Object</span> <span class="tok-n">obj2</span><span class="tok-o">;</span>
+  <span class="tok-kd">final</span> <span class="tok-n">Object</span> <span class="tok-n">obj3</span><span class="tok-o">;</span>
+  <span class="tok-kd">final</span> <span class="tok-n">Object</span> <span class="tok-n">obj4</span><span class="tok-o">;</span>
+
+  <span class="tok-kd">public</span> <span class="tok-nf">SafeSingleton</span><span class="tok-o">()</span> <span class="tok-o">{</span>
+    <span class="tok-n">obj1</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Object</span><span class="tok-o">();</span>
+    <span class="tok-n">obj2</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Object</span><span class="tok-o">();</span>
+    <span class="tok-n">obj3</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Object</span><span class="tok-o">();</span>
+    <span class="tok-n">obj4</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Object</span><span class="tok-o">();</span>
+  <span class="tok-o">}</span>
+<span class="tok-o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And this object would obviously be non-safely initialized:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="java"><span class="tok-kd">public</span> <span class="tok-kd">final</span> <span class="tok-kd">class</span> <span class="tok-nc">UnsafeSingleton</span> <span class="tok-kd">implements</span> <span class="tok-n">Singleton</span> <span class="tok-o">{</span>
+  <span class="tok-n">Object</span> <span class="tok-n">obj1</span><span class="tok-o">;</span>
+  <span class="tok-n">Object</span> <span class="tok-n">obj2</span><span class="tok-o">;</span>
+  <span class="tok-n">Object</span> <span class="tok-n">obj3</span><span class="tok-o">;</span>
+  <span class="tok-n">Object</span> <span class="tok-n">obj4</span><span class="tok-o">;</span>
+
+  <span class="tok-kd">public</span> <span class="tok-nf">UnsafeSingleton</span><span class="tok-o">()</span> <span class="tok-o">{</span>
+    <span class="tok-n">obj1</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Object</span><span class="tok-o">();</span>
+    <span class="tok-n">obj2</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Object</span><span class="tok-o">();</span>
+    <span class="tok-n">obj3</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Object</span><span class="tok-o">();</span>
+    <span class="tok-n">obj4</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Object</span><span class="tok-o">();</span>
+  <span class="tok-o">}</span>
+<span class="tok-o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can read more on final fields semantics at <a href="http://shipilev.net/blog/2014/all-fields-are-final/">"All Fields Are Final"</a>. We will only highlight a few interesting implementation quirks related to final fields handling. It is educational to read <a href="http://hg.openjdk.java.net/jdk9/jdk9/hotspot/file/ae45df3285c9/src/share/vm/opto/parse1.cpp#l930">the relevant part of the VM implementation</a>. In short, we emit a trailing barrier in three cases:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>A final field was written.</strong> Notice we do not care about <strong>what</strong> field was actually written, we unconditionally emit the barrier before exiting the (initializer) method. That means if you have at least one final field write, the final fields semantics extend to every other field written in constructor. That means this one <strong>can be</strong> a safe initialization given this simple VM implementation:</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="java"><span class="tok-kd">public</span> <span class="tok-kd">class</span> <span class="tok-nc">TrickySingleton</span> <span class="tok-kd">implements</span> <span class="tok-n">Singleton</span> <span class="tok-o">{</span>
+  <span class="tok-kd">final</span> <span class="tok-n">Object</span> <span class="tok-n">barrier</span><span class="tok-o">;</span>
+  <span class="tok-n">Object</span> <span class="tok-n">obj1</span><span class="tok-o">;</span>
+  <span class="tok-n">Object</span> <span class="tok-n">obj2</span><span class="tok-o">;</span>
+  <span class="tok-n">Object</span> <span class="tok-n">obj3</span><span class="tok-o">;</span>
+  <span class="tok-n">Object</span> <span class="tok-n">obj4</span><span class="tok-o">;</span>
+
+  <span class="tok-kd">public</span> <span class="tok-nf">TrickySingleton</span><span class="tok-o">()</span> <span class="tok-o">{</span>
+    <span class="tok-n">barrier</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Object</span><span class="tok-o">();</span>
+    <span class="tok-n">obj1</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Object</span><span class="tok-o">();</span>
+    <span class="tok-n">obj2</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Object</span><span class="tok-o">();</span>
+    <span class="tok-n">obj3</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Object</span><span class="tok-o">();</span>
+    <span class="tok-n">obj4</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">Object</span><span class="tok-o">();</span>
+  <span class="tok-o">}</span>
+  <span class="tok-o">...</span>
+<span class="tok-o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice how "fun" it would be for the actual software: you remove the "barrier" field in the course of some cleanup and/or refactoring, and an unrelated field starts to contain garbage after a unsafe publication.</p>
+</div>
+</li>
+<li>
+<p><strong>A volatile field was written on PPC</strong>. This is a courtesy of PPC implementation, not required by spec, strictly speaking. But without it, some very trivial scenarios, like unsafe publication of user-initialized <code>AtomicInteger</code> could see under-initialized instance of it.</p>
+</li>
+<li>
+<p><strong>A field write was detected, and -XX:+UnlockExperimentalVMOptions -XX:+AlwaysSafeConstructors was requested</strong>. This is an experimental feature used to evaluate correctness and performance impact for pending JMM Update work.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_practice">Practice</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_correctness">Correctness</h3>
+<div class="paragraph">
+<p>The discussion so far has been purely theoretical: if something can break, it does not mean it would break, right? Let us try to see the breakage in the wild. The original post was done well before we had <a href="http://openjdk.java.net/projects/code-tools/jcstress/">jcstress</a>. But now that we have it we can just reuse the examples <a href="http://hg.openjdk.java.net/code-tools/jcstress/file/31dbc6275b2d/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/">already available</a> there.</p>
+</div>
+<div class="paragraph">
+<p>The implementations in jcstress suite vaguely represent the candidate <code>SingletonFactory</code> implementations we have already outlined above. We also have two <code>Singleton</code> implementations, one that is safely initialized, and another one that is initialized unsafely. Let’s try to run these singleton tests on two interesting platforms: high-end x86 and commodity ARMv7.</p>
+</div>
+<div class="paragraph">
+<p>In the results below the table cells show the number of failures per number of tries: the failure is either getting a null singleton, or improperly constructed one. Both <code>Singleton</code> and <code>SingletonFactory</code> sources are linked in the table as well.</p>
+</div>
+<div class="sect3">
+<h4 id="_x86">x86</h4>
+<div class="paragraph">
+<p>Running the jcstress tests with
+ <code>java -XX:+StressLCM -XX:+StressGCM  -XX:-RestrictContended -jar target/jcstress.jar -t ".*singletons.*" -v -f 100</code> on quad-core Haswell i7-4790K, Linux x86_64, JDK 8u40 fastdebug<sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="https://shipilev.net/blog/2014/safe-public-construction/#_footnote_1" title="View footnote.">1</a>]</sup> build  yields:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. x86 Singleton Correctness Tests</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"></th>
+<th class="tableblock halign-left valign-top"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SingletonSafe.java#l27">Safe Singleton</a></th>
+<th class="tableblock halign-left valign-top"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SingletonUnsafe.java#l27">Unsafe Singleton</a></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/FinalWrapper.java#l71">Final Wrapper</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/3.3G</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/3.2G</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/Holder.java#l69">Holder</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/9.9G</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/9.7G</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SafeDCL.java#l71">Safe DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/3.2G</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/2.8G</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SafeLocalDCL.java#l71">Safe Local DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/3.2G</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/3.3G</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SynchronizedCL.java#l71">Synchronized CL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/3.8G</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/3.7G</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/UnsafeDCL.java#l71">Unsafe DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/3.7G</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">43.8K/3.7G <code>(!)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/UnsafeLocalDCL.java#l71">Unsafe Local DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/3.89G</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">20.7K/3.8G <code>(!)</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>A few important notes here:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>We can see that the failure happens when an unsafely constructed <code>Singleton</code> meets the unsafely publishing <code>SingletonFactory</code>.This is not an advice for programming dangerously. Rather, this is an example of "defense in depth", where failing in one place does not break correctness for the entire program.</p>
+</li>
+<li>
+<p>The tests are probabilistic: if we haven’t observed the failure, it does not mean the test would always pass. We might be just lucky to always have the illusion of correctness. This is certainly the case for <strong>Unsafe DCL</strong> + <strong>Safe Singleton</strong>. See the example later how it actually breaks.</p>
+</li>
+<li>
+<p>x86 is Total Store Order hardware, meaning the stores are visible for all processors in some total order. That is, if compiler actually presented the program stores in the same order to hardware, we may be reasonably sure the initializing stores of the instance fields would be visible before seeing the reference to the object itself. Even if your hardware is total-store-ordered, you can not be sure the compiler would not reorder within the allowed memory model spec. If you turn off <code>-XX:+StressGCM -XX:+StressLCM</code> in this experiment, all cases would <em>appear</em> correct since the compiler did not reorder much.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_arm">ARM</h4>
+<div class="paragraph">
+<p>The similar run with <code>java -XX:-RestrictContended -jar target/jcstress.jar -t ".*singletons.*" -v -f 10</code> on quad-core Cortex-A9, Linux ARMv7, JDK 8:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 2. ARMv7 Singleton Correctness Tests</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"></th>
+<th class="tableblock halign-left valign-top"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SingletonSafe.java#l27">Safe Singleton</a></th>
+<th class="tableblock halign-left valign-top"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SingletonUnsafe.java#l27">Unsafe Singleton</a></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/FinalWrapper.java#l71">Final Wrapper</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/99M</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/103M</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/Holder.java#l69">Holder</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/352M</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/358M</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SafeDCL.java#l71">Safe DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/101M</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/105M</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SafeLocalDCL.java#l71">Safe Local DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/102M</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/129M</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SynchronizedCL.java#l71">Synchronized CL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/129M</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/138M</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/UnsafeDCL.java#l71">Unsafe DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">233/127M <code>(!)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">809/134M <code>(!)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/UnsafeLocalDCL.java#l71">Unsafe Local DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0/126M</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">230/134M <code>(!)</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>A few important notes here:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Again, we see the failures when an unsafely initialized singleton meets an unsafely publishing singleton factory, like in x86 case. Notice that we did not used any compiler fuzzers at this point: this is the result of actual hardware reordering, not the compiler reordering.</p>
+</li>
+<li>
+<p>The case of <strong>Unsafe DCL</strong> + <strong>Safe Singleton</strong> is interesting and stands out. There is a race in Unsafe DCL factory which is responsible for breakage: we observe null singleton. This is something that strikes people as odd, but it is legal in JMM. This is another example that <code>final</code>-s can save you from observing the under-initialized object, but can not save you from not seeing the object itself!</p>
+</li>
+<li>
+<p>Notice how doing <code>synchronized</code> in <strong>Unsafe DCL</strong> store does not help, contrary to layman belief it somehow magically "flushes the caches" or whatnot. Without a paired lock when <em>reading</em> the protected state, you are not guaranteed to see the writes preceding the lock-protected write.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_performance">Performance</h3>
+<div class="paragraph">
+<p>We can argue about correctness all we want, but given a few correct code variants, which one is most performing? Let us answer this question by doing a few nano-benchmarks. Once we have <a href="http://openjdk.java.net/projects/code-tools/jmh/">JMH</a>, and the <code>SingletonFactory</code> implementations already available for us, we can just do this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="java"><span class="tok-nd">@Fork</span><span class="tok-o">(</span><span class="tok-mi">5</span><span class="tok-o">)</span>
+<span class="tok-nd">@Warmup</span><span class="tok-o">(</span><span class="tok-n">iterations</span> <span class="tok-o">=</span> <span class="tok-mi">5</span><span class="tok-o">,</span> <span class="tok-n">time</span> <span class="tok-o">=</span> <span class="tok-mi">1</span><span class="tok-o">,</span> <span class="tok-n">timeUnit</span> <span class="tok-o">=</span> <span class="tok-n">TimeUnit</span><span class="tok-o">.</span><span class="tok-na">SECONDS</span><span class="tok-o">)</span>
+<span class="tok-nd">@Measurement</span><span class="tok-o">(</span><span class="tok-n">iterations</span> <span class="tok-o">=</span> <span class="tok-mi">5</span><span class="tok-o">,</span> <span class="tok-n">time</span> <span class="tok-o">=</span> <span class="tok-mi">1</span><span class="tok-o">,</span> <span class="tok-n">timeUnit</span> <span class="tok-o">=</span> <span class="tok-n">TimeUnit</span><span class="tok-o">.</span><span class="tok-na">SECONDS</span><span class="tok-o">)</span>
+<span class="tok-nd">@BenchmarkMode</span><span class="tok-o">(</span><span class="tok-n">Mode</span><span class="tok-o">.</span><span class="tok-na">AverageTime</span><span class="tok-o">)</span>
+<span class="tok-nd">@OutputTimeUnit</span><span class="tok-o">(</span><span class="tok-n">TimeUnit</span><span class="tok-o">.</span><span class="tok-na">NANOSECONDS</span><span class="tok-o">)</span>
+<span class="tok-nd">@State</span><span class="tok-o">(</span><span class="tok-n">Scope</span><span class="tok-o">.</span><span class="tok-na">Benchmark</span><span class="tok-o">)</span>
+<span class="tok-kd">public</span> <span class="tok-kd">class</span> <span class="tok-nc">FinalWrapper</span> <span class="tok-o">{</span>
+
+    <span class="tok-kd">private</span> <span class="tok-n">FinalWrapperFactory</span> <span class="tok-n">factory</span><span class="tok-o">;</span>
+
+    <span class="tok-nd">@Setup</span>
+    <span class="tok-kd">public</span> <span class="tok-kt">void</span> <span class="tok-nf">setup</span><span class="tok-o">()</span> <span class="tok-o">{</span>
+        <span class="tok-n">factory</span> <span class="tok-o">=</span> <span class="tok-k">new</span> <span class="tok-n">FinalWrapperFactory</span><span class="tok-o">();</span>
+    <span class="tok-o">}</span>
+
+    <span class="tok-nd">@Benchmark</span>
+    <span class="tok-kd">public</span> <span class="tok-n">Singleton</span> <span class="tok-nf">first_unsafe</span><span class="tok-o">()</span> <span class="tok-o">{</span>
+        <span class="tok-k">return</span> <span class="tok-k">new</span> <span class="tok-n">FinalWrapperFactory</span><span class="tok-o">().</span><span class="tok-na">getInstance</span><span class="tok-o">(</span><span class="tok-n">SingletonUnsafe</span><span class="tok-o">::</span><span class="tok-k">new</span><span class="tok-o">);</span>
+    <span class="tok-o">}</span>
+
+    <span class="tok-nd">@Benchmark</span>
+    <span class="tok-kd">public</span> <span class="tok-n">Singleton</span> <span class="tok-nf">first_safe</span><span class="tok-o">()</span> <span class="tok-o">{</span>
+        <span class="tok-k">return</span> <span class="tok-k">new</span> <span class="tok-n">FinalWrapperFactory</span><span class="tok-o">().</span><span class="tok-na">getInstance</span><span class="tok-o">(</span><span class="tok-n">SingletonSafe</span><span class="tok-o">::</span><span class="tok-k">new</span><span class="tok-o">);</span>
+    <span class="tok-o">}</span>
+
+    <span class="tok-nd">@Benchmark</span>
+    <span class="tok-kd">public</span> <span class="tok-n">Singleton</span> <span class="tok-nf">steady_unsafe</span><span class="tok-o">()</span> <span class="tok-o">{</span>
+        <span class="tok-k">return</span> <span class="tok-n">factory</span><span class="tok-o">.</span><span class="tok-na">getInstance</span><span class="tok-o">(</span><span class="tok-n">SingletonUnsafe</span><span class="tok-o">::</span><span class="tok-k">new</span><span class="tok-o">);</span>
+    <span class="tok-o">}</span>
+
+    <span class="tok-nd">@Benchmark</span>
+    <span class="tok-kd">public</span> <span class="tok-n">Singleton</span> <span class="tok-nf">steady_safe</span><span class="tok-o">()</span> <span class="tok-o">{</span>
+        <span class="tok-k">return</span> <span class="tok-n">factory</span><span class="tok-o">.</span><span class="tok-na">getInstance</span><span class="tok-o">(</span><span class="tok-n">SingletonSafe</span><span class="tok-o">::</span><span class="tok-k">new</span><span class="tok-o">);</span>
+    <span class="tok-o">}</span>
+
+
+    <span class="tok-kd">public</span> <span class="tok-kd">static</span> <span class="tok-kd">class</span> <span class="tok-nc">FinalWrapperFactory</span> <span class="tok-o">{</span>
+        <span class="tok-o">...</span>
+    <span class="tok-o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>…​and be done. Notice this benchmark covers two cases:</p>
+</div>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p><strong>first_</strong> cases when we request the <code>Singleton</code> instance off the freshly-baked <code>SingletonFactory</code>. This may help to estimate the upfront costs of seeding the factory, which would also include safe initialization cost, plus the "publishing" side of safe publication.</p>
+</li>
+<li>
+<p><strong>steady_</strong> cases when <code>SingletonFactory</code> is already populated with <code>Singleton</code> instance, and we arguably go through the internal fast-paths. This case is reasonable to measure in multiple threads (under contention), to see how <code>SingletonFactory</code> performs under load. This will cover the "consuming" side of safe publication costs.</p>
+</li>
+</ol>
+</div>
+<div class="sect3">
+<h4 id="_x86_2">x86</h4>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 3. x86: Asking for a Singleton instance for the first time, ns/op</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"></th>
+<th class="tableblock halign-left valign-top"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SingletonSafe.java#l27">Safe Singleton</a></th>
+<th class="tableblock halign-left valign-top"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SingletonUnsafe.java#l27">Unsafe Singleton</a></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/FinalWrapper.java#l71">Final Wrapper</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4.096 ± 0.018</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4.091 ± 0.024</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/Holder.java#l69">Holder</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.256 ± 0.001 (not really)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.256 ± 0.001 (not really)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SafeDCL.java#l71">Safe DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6.684 ± 0.015</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6.687 ± 0.015</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SafeLocalDCL.java#l71">Safe Local DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6.668 ± 0.011</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6.994 ± 0.481</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SynchronizedCL.java#l71">Synchronized CL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.332 ± 0.009</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.339 ± 0.006</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/UnsafeDCL.java#l71">Unsafe DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.333 ± 0.007</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.335 ± 0.007</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/UnsafeLocalDCL.java#l71">Unsafe Local DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.335 ± 0.008</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.339 ± 0.006</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>How would one interpret these results? Arm yourself with low-level profilers, like JMH’s <code>-prof perfasm</code>, and <a href="https://shipilev.net/blog/2014/safe-public-construction/first.perfasm">you will see</a> that:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Holder</strong> is lying to us: even though we instantiate a <code>HolderFactory</code>, the singleton is already initialized, and just sits there in a static field. The performance data for this idiom is unreliable.</p>
+</li>
+<li>
+<p><strong>FinalWrapper</strong> does one excess allocation of the wrapper itself, and that costs us a few CPU cycles, setting us back 2 ns per initialization.</p>
+</li>
+<li>
+<p><strong>Safe DCL</strong> does the volatile writes when storing the singleton instance, which entails a <strong>StoreLoad</strong> barrier. This sets us back 4 ns per initialization.</p>
+</li>
+<li>
+<p><strong>Synchronized CL</strong> has the synchronization removed because the factory is thread-local. This is arguably a benchmarking quirk, but we would not do anything to address it, since first invocation of factory is not that important to us.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Of course, these costs are one-time, and in the grand scheme of things, these overheads are minuscule, probably drowning in all the initialization overheads incurred in other parts of an application.</p>
+</div>
+<div class="paragraph">
+<p>The interesting case is about calling the singleton factory continuously:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 4. x86: Asking for a Singleton instance continuously, ns/op</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">1 thread</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">8 threads</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SingletonSafe.java#l27">Safe Singleton</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SingletonUnsafe.java#l27">Unsafe Singleton</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SingletonSafe.java#l27">Safe Singleton</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SingletonUnsafe.java#l27">Unsafe Singleton</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/FinalWrapper.java#l71">Final Wrapper</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.256 ± 0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.256 ± 0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.481 ± 0.007</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.485 ± 0.015</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/Holder.java#l69">Holder</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.256 ± 0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.257 ± 0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.417 ±  0.005</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.415 ±  0.004</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SafeDCL.java#l71">Safe DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.256 ± 0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.256 ± 0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.481 ±  0.011</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.475 ±  0.002</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SafeLocalDCL.java#l71">Safe Local DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.257 ± 0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.257 ± 0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.496 ±  0.007</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.495 ±  0.003</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SynchronizedCL.java#l71">Synchronized CL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">18.860 ± 0.002</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">18.860 ± 0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">311.652 ± 10.522</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">302.346 ± 14.347</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/UnsafeDCL.java#l71">Unsafe DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.257 ± 0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.256 ± 0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.488 ± 0.021</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.495 ± 0.006</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/UnsafeLocalDCL.java#l71">Unsafe Local DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.260 ± 0.002</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.257 ± 0.002</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.502 ± 0.019</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.497 ± 0.008</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>This is another interesting tidbit on x86: the Haswell processors are so fast, we mostly spend time in JMH Blackhole consuming the Singleton object. Again, arming ourselves with <code>-prof perfasm</code> highlights <a href="https://shipilev.net/blog/2014/safe-public-construction/steady.perfasm">what is happening</a>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Synchronized CL</strong> is very slow, since it does acquiring/release of associated monitor on each <code>getInstance()</code> call. The cost is wild when multiple threads are going for a singleton instance, and this is why people invented double-checked locking to begin with.</p>
+</li>
+<li>
+<p><strong>Holder</strong> factory is marginally faster because once <code>getInstance()</code> is compiled, the class initialization check is gone — we know the <code>Holder</code> class is initialized — and so we load its field directly. The caveat is apparent here: we can not easily drop the Singleton instance from memory. Even if we lose all the references to the factory, the VM still needs to retain the class and its static fields.</p>
+</li>
+<li>
+<p>All other factories are performing more or less the same. This is true even for <strong>Unsafe DCL</strong>, which is functionally broken. This is evidence that correctly synchronized code does not always work slower than "tricky" incorrect code.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_arm_2">ARM</h4>
+<div class="paragraph">
+<p>ARMv7 is a weakly-ordered platform, and so the data gets more interesting.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 5. ARMv7: Asking for a Singleton instance for the first time, ns/op</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"></th>
+<th class="tableblock halign-left valign-top"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SingletonSafe.java#l27">Safe Singleton</a></th>
+<th class="tableblock halign-left valign-top"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SingletonUnsafe.java#l27">Unsafe Singleton</a></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/FinalWrapper.java#l71">Final Wrapper</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">169.986 ± 0.670</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">162.707 ± 0.556</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/Holder.java#l69">Holder</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">29.017 ± 0.081</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">29.075 ± 0.084</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SafeDCL.java#l71">Safe DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">156.421 ± 0.275</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">153.458 ± 0.406</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SafeLocalDCL.java#l71">Safe Local DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">154.130 ± 0.411</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">150.651 ± 0.332</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SynchronizedCL.java#l71">Synchronized CL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">128.344 ± 0.435</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">124.435 ± 0.384</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/UnsafeDCL.java#l71">Unsafe DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">128.515 ± 0.625</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">124.734 ± 0.300</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/UnsafeLocalDCL.java#l71">Unsafe Local DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">127.578 ± 0.307</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">124.968 ± 0.487</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>As usual, arming with <code>-prof perfasm</code>:<sup class="footnote">[<a id="_footnoteref_2" class="footnote" href="https://shipilev.net/blog/2014/safe-public-construction/#_footnote_2" title="View footnote.">2</a>]</sup></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Holder</strong> is still lying to us, see above: it does not re-initialize the singleton at all.</p>
+</li>
+<li>
+<p><strong>Final Wrapper</strong> is slower because of the excess allocations, as in the x86 case.</p>
+</li>
+<li>
+<p><strong>Safe DCL</strong> is slower because of volatile writes, as in the x86 case.</p>
+</li>
+<li>
+<p>The difference between <strong>Safe Singleton</strong> and <strong>Unsafe Singleton</strong> is the cost of safe initialization, e.g. the cost of the trailing barrier at the end of constructor. It isn’t that great of a cost, but it is measurable. Carefully choosing which safety guarantee to give up, one can speed up the entire thing: e.g. by using <strong>Unsafe Local DCL</strong> + <strong>Safe Singleton</strong>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Again, these are the one-off costs, and we may choose not to care. We do care about the sustained performance though:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 6. ARMv7: Asking for a Singleton instance continuously, ns/op</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">1 thread</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">4 threads</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SingletonSafe.java#l27">Safe Singleton</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SingletonUnsafe.java#l27">Unsafe Singleton</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SingletonSafe.java#l27">Safe Singleton</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SingletonUnsafe.java#l27">Unsafe Singleton</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/FinalWrapper.java#l71">Final Wrapper</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">28.223 ± 0.005</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">28.228 ± 0.006</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">28.237 ±  0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">28.237 ±  0.005</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/Holder.java#l69">Holder</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">13.526 ± 0.003</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">13.523 ± 0.002</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">13.529 ±  0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">13.530 ±  0.001</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SafeDCL.java#l71">Safe DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">33.510 ± 0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">33.510 ± 0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">33.530 ±  0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">33.530 ±  0.001</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SafeLocalDCL.java#l71">Safe Local DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">29.400 ± 0.005</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">29.397 ± 0.003</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">29.412 ±  0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">29.412 ±  0.001</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/SynchronizedCL.java#l71">Synchronized CL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">77.679 ± 0.176</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">77.560 ± 0.018</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1237.716 ± 31.500</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1291.585 ± 63.876</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/UnsafeDCL.java#l71">Unsafe DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">26.940 ± 0.130</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">26.957 ± 0.133</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">26.936 ±  0.119</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">26.940 ±  0.122</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://hg.openjdk.java.net/code-tools/jcstress/file/9270b927e00f/tests-custom/src/main/java/org/openjdk/jcstress/tests/singletons/UnsafeLocalDCL.java#l71">Unsafe Local DCL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">30.573 ± 0.003</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">30.573 ± 0.003</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">30.588 ±  0.001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">30.588 ±  0.001</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Oh, I like that, it now starts to be quantifiable with a naked eye:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Synchronized CL</strong> behaves as expected: locks are not cheap, and once you contend on them, they don’t get any cheaper.</p>
+</li>
+<li>
+<p><strong>Holder</strong> factory leads the way big time: we do not do any volatile reads, we just reach for the static field, and return.</p>
+</li>
+<li>
+<p><strong>Safe DCL</strong> factories do the volatile reads, which entail hardware memory barriers on ARMv7. One can estimate the impact of these barriers by looking at the difference between <strong>Safe DCL</strong> and <strong>Safe Local DCL</strong> — saving a volatile read helps performance a bit! While this should not be a concern for most programs, in some high-performance cases this might be a deal-breaker!</p>
+</li>
+<li>
+<p><strong>Unsafe DCL</strong> is even faster, because no volatile reads are happening at all. Remember, most tests involving <strong>Unsafe DCL</strong> are functionally broken. Those 3-6 ns difference between <strong>Unsafe DCL</strong> and <strong>Safe DCL</strong> seems to be a fair price for correctness.</p>
+</li>
+<li>
+<p><strong>Final Wrapper</strong> does not do barriers, but it does an additional memory dereference going for the wrapper, and thus gains almost nothing compared to <strong>Safe DCL</strong>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_conclusion">Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Safe Publication and Safe Initialization idioms are great abstractions over Java Memory Model rules. Used carefully, these idioms can be used as building blocks for constructing larger concurrent programs without breaking correctness. The performance costs for these idioms are usually drowned in all other costs. In the singleton examples above, while the costs are measurable, the cost of allocation, or the cost of additional memory dereference may greatly offset the cost of the safe initialization/publication pattern itself.</p>
+</div>
+<div class="paragraph">
+<p>Safe Initialization does not magically save you from all the races. If you are doing the racy reads of otherwise safely initialized objects, something can still go haywire. Racy reads themselves are almost <a href="http://dl.acm.org/citation.cfm?doid=2414729.2414732">pure evil</a>, even on the platforms that are very forgiving, like x86.</p>
+</div>
+<div class="paragraph">
+<p>And please, don’t you ever again come to me claiming DCL is broken, or you will use "synchronized" in this construction because your are generally afraid of "volatiles" and can’t reason about them. This is where you will waste your precious nanoseconds, and many billions of your nanobucks.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="footnotes">
+<hr>
+<div class="footnote" id="_footnote_1">
+<a href="https://shipilev.net/blog/2014/safe-public-construction/#_footnoteref_1">1</a>. Fastdebug build is needed to gain access to <code>-XX:+StressLCM -XX:+StressGCM</code> instruction scheduling fuzzers in Hotspot. You may reproduce the same effect on a production VM with having a beefier <code>Singleton</code> with more fields, so that at least one of the initializing stores spill over the reference publication. If you need an example of that, refer to <a href="http://hg.openjdk.java.net/code-tools/jcstress/file/7cd3dfada49b/tests-custom/src/main/java/org/openjdk/jcstress/tests/unsafe/UnsafePublication.java">the sample jcstress test</a>, or <a href="http://cs.oswego.edu/pipermail/concurrency-interest/2015-January/013861.html">the sample result</a>. It is more consistent and convenient to use fuzzers for the sake of this demonstration.
+</div>
+<div class="footnote" id="_footnote_2">
+<a href="https://shipilev.net/blog/2014/safe-public-construction/#_footnoteref_2">2</a>. The output is not available, sorry, since showing disassembly from ARM port is arguably not a Fair Use. You have to believe me on performance assessment.
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2016-06-24 21:42:04 CEST
+</div>
+</div>
+
+</body></html>
