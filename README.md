@@ -10,4 +10,7 @@ https://shipilev.net/blog/2014/safe-public-construction/
 
 https://shipilev.net/blog/2014/jmm-pragmatics/
 
+For more reading :
+https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code
+
 
